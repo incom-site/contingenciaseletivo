@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Google Sheets API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        button {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #357ae8;
+        }
+        .result {
+            background: white;
+            padding: 15px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Diagnóstico Google Sheets</h1>
+
+    <div class="test-section">
+        <h2>1. Configuração</h2>
+        <p><strong>URL do Script:</strong> <span id="scriptUrl"></span></p>
+        <button onclick="testConnection()">Testar Conexão</button>
+        <div id="connectionResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Buscar Candidatos (RAW)</h2>
+        <button onclick="getCandidatesRaw()">Buscar Todos os Candidatos</button>
+        <div id="candidatesRaw" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Verificar Estrutura</h2>
+        <button onclick="checkStructure()">Verificar Headers</button>
+        <div id="structureResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Testar com Filtros</h2>
+        <button onclick="testWithFilters()">Buscar com Filtros</button>
+        <div id="filterResult" class="result"></div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxyU62K8MHdXsl1AD50TTtxBP27cs3wzSwyClo9N_uEe39PXiYEdu3IwzcicUEeApP8qQ/exec';
+
+        document.getElementById('scriptUrl').textContent = SCRIPT_URL;
+
+        async function testConnection() {
+            const result = document.getElementById('connectionResult');
+            result.innerHTML = '<div class="info">⏳ Testando conexão...</div>';
+
+            try {
+                const url = `${SCRIPT_URL}?action=test`;
+                console.log('🔗 Testando URL:', url);
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                console.log('📡 Status:', response.status);
+                const data = await response.json();
+                console.log('📦 Resposta:', data);
+
+                result.innerHTML = `<div class="success">✅ Conexão OK!</div>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                console.error('❌ Erro:', error);
+                result.innerHTML = `<div class="error">❌ Erro: ${error.message}</div>
+                    <pre>${error.stack}</pre>`;
+            }
+        }
+
+        async function getCandidatesRaw() {
+            const result = document.getElementById('candidatesRaw');
+            result.innerHTML = '<div class="info">⏳ Buscando candidatos...</div>';
+
+            try {
+                const url = `${SCRIPT_URL}?action=getCandidates`;
+                console.log('🔗 URL:', url);
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                console.log('📡 Status:', response.status);
+                console.log('📡 Headers:', [...response.headers.entries()]);
+
+                const text = await response.text();
+                console.log('📄 Resposta (texto):', text.substring(0, 500));
+
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    throw new Error(`Erro ao parsear JSON: ${e.message}\nResposta: ${text.substring(0, 200)}`);
+                }
+
+                console.log('📦 Dados parseados:', data);
+
+                if (data.success) {
+                    const candidates = data.data?.candidates || data.data || [];
+                    console.log('👥 Total de candidatos:', candidates.length);
+
+                    if (candidates.length > 0) {
+                        console.log('👤 Primeiro candidato:', candidates[0]);
+
+                        result.innerHTML = `<div class="success">✅ ${candidates.length} candidatos encontrados!</div>
+                            <h3>Primeiro Candidato:</h3>
+                            <pre>${JSON.stringify(candidates[0], null, 2)}</pre>
+                            <h3>Estrutura Completa:</h3>
+                            <pre>${JSON.stringify(data, null, 2).substring(0, 2000)}...</pre>`;
+                    } else {
+                        result.innerHTML = `<div class="error">⚠️ Nenhum candidato encontrado na resposta</div>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>`;
+                    }
+                } else {
+                    result.innerHTML = `<div class="error">❌ Erro na API: ${data.error || 'Erro desconhecido'}</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>`;
+                }
+            } catch (error) {
+                console.error('❌ Erro:', error);
+                result.innerHTML = `<div class="error">❌ Erro: ${error.message}</div>
+                    <pre>${error.stack}</pre>`;
+            }
+        }
+
+        async function checkStructure() {
+            const result = document.getElementById('structureResult');
+            result.innerHTML = '<div class="info">⏳ Verificando estrutura...</div>';
+
+            try {
+                const url = `${SCRIPT_URL}?action=getCandidates`;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                const candidates = data.data?.candidates || data.data || [];
+
+                if (candidates.length > 0) {
+                    const headers = Object.keys(candidates[0]);
+                    const expectedColumns = [
+                        'NOMECOMPLETO', 'NOMESOCIAL', 'CPF', 'VAGAPCD', 'LAUDOMEDICO',
+                        'AREAATUACAO', 'CARGOADMIN', 'CARGOASSIS', 'TELEFONE', 'EMAIL'
+                    ];
+
+                    const missing = expectedColumns.filter(col => !headers.includes(col));
+                    const extra = headers.filter(h => !expectedColumns.includes(h));
+
+                    result.innerHTML = `<div class="success">✅ Estrutura verificada</div>
+                        <h3>Colunas Recebidas (${headers.length}):</h3>
+                        <pre>${headers.join('\n')}</pre>
+                        ${missing.length > 0 ? `<h3 class="error">❌ Colunas Esperadas Faltando (${missing.length}):</h3>
+                        <pre>${missing.join('\n')}</pre>` : '<div class="success">✅ Todas colunas esperadas presentes</div>'}`;
+                } else {
+                    result.innerHTML = `<div class="error">⚠️ Nenhum candidato para verificar estrutura</div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ Erro: ${error.message}</div>`;
+            }
+        }
+
+        async function testWithFilters() {
+            const result = document.getElementById('filterResult');
+            result.innerHTML = '<div class="info">⏳ Testando com filtros...</div>';
+
+            try {
+                const tests = [
+                    { name: 'Sem filtros', params: {} },
+                    { name: 'Status Classificado', params: { status: 'Classificado' } },
+                    { name: 'Área Administrativa', params: { area: 'Administrativa' } }
+                ];
+
+                let html = '';
+
+                for (const test of tests) {
+                    const params = new URLSearchParams({ action: 'getCandidates', ...test.params });
+                    const url = `${SCRIPT_URL}?${params.toString()}`;
+
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        mode: 'cors',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+                    const candidates = data.data?.candidates || data.data || [];
+
+                    html += `<h3>${test.name}: ${candidates.length} resultados</h3>`;
+                }
+
+                result.innerHTML = html;
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ Erro: ${error.message}</div>`;
+            }
+        }
+
+        // Auto-executar teste de conexão
+        window.addEventListener('load', () => {
+            console.log('🚀 Página carregada - Executando teste automático');
+            testConnection();
+        });
+    </script>
+</body>
+</html>
