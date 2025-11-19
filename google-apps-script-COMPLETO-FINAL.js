@@ -1015,9 +1015,10 @@ function _pickPhoneFromRow_(headers, row) {
 
 function _applyTemplate_(text, candidate){
   if (!text) return '';
+  const cargo = candidate.CARGOADMIN || candidate.CARGOASSIS || '';
   return String(text)
     .replace(/\[NOME\]/g, candidate.NOMECOMPLETO || candidate.NOMESOCIAL || '')
-    .replace(/\[CARGO\]/g, candidate.CARGOPRETENDIDO || '')
+    .replace(/\[CARGO\]/g, cargo)
     .replace(/\[AREA\]/g, candidate.AREAATUACAO || '');
 }
 

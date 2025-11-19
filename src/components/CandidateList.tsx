@@ -37,7 +37,7 @@ export default function CandidateList({
     const areaMatch = filterArea === 'all' || candidate.AREAATUACAO === filterArea;
     
     // Filtro por cargo
-    const cargoMatch = filterCargo === 'all' || candidate.CARGOPRETENDIDO === filterCargo;
+    const cargoMatch = filterCargo === 'all' || candidate.CARGOADMIN === filterCargo || candidate.CARGOASSIS === filterCargo;
     
     // Filtro por status
     const statusMatch = filterStatus === 'all' || 
@@ -58,9 +58,13 @@ export default function CandidateList({
   )).sort();
 
   // Obter cargos únicos para o filtro
-  const cargos = Array.from(new Set(
-    candidates.map(c => c.CARGOPRETENDIDO).filter(Boolean)
-  )).sort();
+  const cargosAdmin = Array.from(new Set(
+    candidates.map(c => c.CARGOADMIN).filter(Boolean)
+  ));
+  const cargosAssis = Array.from(new Set(
+    candidates.map(c => c.CARGOASSIS).filter(Boolean)
+  ));
+  const cargos = Array.from(new Set([...cargosAdmin, ...cargosAssis])).sort();
 
   const getStatusIcon = (status?: string) => {
     switch (status) {
@@ -210,9 +214,9 @@ export default function CandidateList({
                     <span className="font-medium">Área:</span> {candidate.AREAATUACAO}
                   </p>
                 )}
-                {candidate.CARGOPRETENDIDO && (
+                {(candidate.CARGOADMIN || candidate.CARGOASSIS) && (
                   <p className="text-xs text-slate-600">
-                    <span className="font-medium">Cargo:</span> {candidate.CARGOPRETENDIDO}
+                    <span className="font-medium">Cargo:</span> {candidate.CARGOADMIN || candidate.CARGOASSIS}
                   </p>
                 )}
                 <p className="text-xs text-slate-500">

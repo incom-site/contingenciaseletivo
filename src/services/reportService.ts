@@ -19,7 +19,7 @@ function getCandidateArea(c: any): string {
 }
 
 function getCandidateCargo(c: any): string {
-  return getCandidateField(c, 'CARGOPRETENDIDO', 'cargo', 'Cargo');
+  return getCandidateField(c, 'CARGOADMIN', 'cargo', 'Cargo Administrativo') || getCandidateField(c, 'CARGOASSIS', 'cargo', 'Cargo Assistencial');
 }
 
 function getCandidateRegistration(c: any): string {

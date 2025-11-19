@@ -53,7 +53,7 @@ export default function ActionPanel({
       id: 'area-cargo', 
       label: 'Área e Cargo', 
       icon: Briefcase,
-      columns: ['AREAATUACAO', 'CARGOPRETENDIDO']
+      columns: ['AREAATUACAO', 'CARGOADMIN', 'CARGOASSIS']
     },
     { 
       id: 'curriculo', 

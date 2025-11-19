@@ -190,7 +190,7 @@ export default function ReportsPage({ onClose }: ReportsPageProps) {
           getCandidateField(c, 'NOMESOCIAL', 'nome_social'),
           getCandidateField(c, 'CPF', 'cpf'),
           getCandidateField(c, 'TELEFONE', 'telefone'),
-          getCandidateField(c, 'CARGOPRETENDIDO', 'cargo'),
+          getCandidateField(c, 'CARGOADMIN', 'cargo') || getCandidateField(c, 'CARGOASSIS', 'cargo'),
           getCandidateField(c, 'VAGAPCD', 'vaga_pcd'),
           getCandidateField(c, 'assigned_analyst_name', 'Analista', 'analista_triagem'),
           getCandidateField(c, 'interviewer_name', 'entrevistador', 'Entrevistador')
@@ -204,7 +204,7 @@ export default function ReportsPage({ onClose }: ReportsPageProps) {
           getCandidateField(c, 'NOMESOCIAL', 'nome_social'),
           getCandidateField(c, 'CPF', 'cpf'),
           getCandidateField(c, 'TELEFONE', 'telefone'),
-          getCandidateField(c, 'CARGOPRETENDIDO', 'cargo'),
+          getCandidateField(c, 'CARGOADMIN', 'cargo') || getCandidateField(c, 'CARGOASSIS', 'cargo'),
           getCandidateField(c, 'Motivo Desclassificação', 'motivo_desclassificacao'),
           getCandidateField(c, 'VAGAPCD', 'vaga_pcd'),
           getCandidateField(c, 'assigned_analyst_name', 'Analista', 'analista_triagem')
@@ -218,7 +218,7 @@ export default function ReportsPage({ onClose }: ReportsPageProps) {
           getCandidateField(c, 'NOMESOCIAL', 'nome_social'),
           getCandidateField(c, 'CPF', 'cpf'),
           getCandidateField(c, 'TELEFONE', 'telefone'),
-          getCandidateField(c, 'CARGOPRETENDIDO', 'cargo'),
+          getCandidateField(c, 'CARGOADMIN', 'cargo') || getCandidateField(c, 'CARGOASSIS', 'cargo'),
           c.interview_score?.toString() || c.pontuacao_entrevista?.toString() || '0',
           getCandidateField(c, 'VAGAPCD', 'vaga_pcd'),
           getCandidateField(c, 'interviewer_name', 'entrevistador', 'Entrevistador')
@@ -339,7 +339,7 @@ export default function ReportsPage({ onClose }: ReportsPageProps) {
       getCandidateField(candidate, 'NOMESOCIAL', 'nome_social') || '-',
       getCandidateField(candidate, 'CPF', 'cpf') || 'Não informado',
       getCandidateField(candidate, 'TELEFONE', 'telefone') || 'Não informado',
-      getCandidateField(candidate, 'CARGOPRETENDIDO', 'cargo') || 'Não informado'
+      getCandidateField(candidate, 'CARGOADMIN', 'cargo') || getCandidateField(candidate, 'CARGOASSIS', 'cargo') || 'Não informado'
     ];
 
     switch (reportType) {
@@ -671,7 +671,7 @@ export default function ReportsPage({ onClose }: ReportsPageProps) {
                         {getCandidateField(candidate, 'TELEFONE', 'telefone') || 'Não informado'}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {getCandidateField(candidate, 'CARGOPRETENDIDO', 'cargo') || 'Não informado'}
+                        {getCandidateField(candidate, 'CARGOADMIN', 'cargo') || getCandidateField(candidate, 'CARGOASSIS', 'cargo') || 'Não informado'}
                       </td>
                       {reportType === 'desclassificados' && (
                         <td className="px-4 py-3 text-sm text-gray-600">

@@ -195,7 +195,7 @@ export default function DocumentViewer({ candidate, onFocusDocument }: DocumentV
           </div>
           <div>
             <p className="text-xs text-slate-500 uppercase font-semibold">Cargo Pretendido</p>
-            <p className="text-sm text-slate-800 font-medium">{candidate.CARGOPRETENDIDO}</p>
+            <p className="text-sm text-slate-800 font-medium">{candidate.CARGOADMIN || candidate.CARGOASSIS}</p>
           </div>
           <div>
             <p className="text-xs text-slate-500 uppercase font-semibold">Vaga PCD</p>

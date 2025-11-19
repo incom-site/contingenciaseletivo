@@ -52,7 +52,8 @@ export default function CandidateDetailView({ candidate, onClose }: CandidateDet
       
       // Área e Cargo
       AREAATUACAO: 'ÁREA DE ATUAÇÃO',
-      CARGOPRETENDIDO: 'CARGO PRETENDIDO',
+      CARGOADMIN: 'CARGO ADMINISTRATIVO',
+      CARGOASSIS: 'CARGO ASSISTENCIAL',
       
       // Documentos
       CURRICULOVITAE: 'CURRÍCULO VITAE',
@@ -100,7 +101,8 @@ export default function CandidateDetailView({ candidate, onClose }: CandidateDet
 
   const areaCargoFields = createOrderedFields([
     'AREAATUACAO',
-    'CARGOPRETENDIDO'
+    'CARGOADMIN',
+    'CARGOASSIS'
   ]);
 
   const documentosFields = createOrderedFields([

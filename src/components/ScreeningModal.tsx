@@ -10,7 +10,8 @@ interface Candidate {
   CPF?: string;
   NOMESOCIAL?: string;
   AREAATUACAO?: string;
-  CARGOPRETENDIDO?: string;
+  CARGOADMIN?: string;
+  CARGOASSIS?: string;
   VAGAPCD?: string;
 }
 
@@ -297,7 +298,7 @@ export default function ScreeningModal({
   };
 
   const getCargoPretendido = () => {
-    return candidate.CARGOPRETENDIDO || 'Não informado';
+    return candidate.CARGOADMIN || candidate.CARGOASSIS || 'Não informado';
   };
 
   const getVagaPCD = () => {

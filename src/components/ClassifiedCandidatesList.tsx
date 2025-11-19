@@ -276,7 +276,7 @@ export default function ClassifiedCandidatesList() {
                     {candidate.AREAATUACAO || 'Não informado'}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-600">
-                    {candidate.CARGOPRETENDIDO || 'Não informado'}
+                    {candidate.CARGOADMIN || candidate.CARGOASSIS || 'Não informado'}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-600 font-mono">
                     {candidate.CPF || 'Não informado'}

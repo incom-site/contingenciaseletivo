@@ -16,7 +16,8 @@ interface Candidate {
   AREAATUACAO?: string;
   desired_area?: string;
   area_atuacao_pretendida?: string;
-  CARGOPRETENDIDO?: string;
+  CARGOADMIN?: string;
+  CARGOASSIS?: string;
   cargo_administrativo?: string | boolean;
   cargo_assistencial?: string | boolean;
   status?: string;
@@ -92,7 +93,7 @@ export default function DisqualifiedCandidatesList() {
   }
 
   function getCargo(c: Candidate) {
-    return c.CARGOPRETENDIDO || c.cargo_administrativo || c.cargo_assistencial || 'Não informado';
+    return c.CARGOADMIN || c.CARGOASSIS || c.cargo_administrativo || c.cargo_assistencial || 'Não informado';
   }
 
   function getDataTriagem(c: Candidate) {
