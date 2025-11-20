@@ -36,8 +36,8 @@ async function makeRequest(action: string, params: any = {}): Promise<GoogleShee
 }
 
 export const googleSheetsService = {
-  async getCandidates(filters?: any): Promise<GoogleSheetsResponse> {
-    return makeRequest('getCandidates', filters);
+  async getCandidates(filters?: any, page: number = 1, pageSize: number = 1000): Promise<GoogleSheetsResponse> {
+    return makeRequest('getCandidates', { ...filters, page, pageSize });
   },
 
   async updateCandidateStatus(

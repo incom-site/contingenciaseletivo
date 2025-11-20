@@ -97,17 +97,23 @@ class GoogleSheetsService {
     }
   }
 
-  async getCandidates(): Promise<Candidate[]> {
+  async getCandidates(page: number = 1, pageSize: number = 1000): Promise<Candidate[]> {
     console.log('📞 Chamando getCandidates do Google Sheets...');
-    const result = await this.fetchData('getCandidates');
+    console.log('📄 Página:', page, 'PageSize:', pageSize);
+
+    const result = await this.fetchData('getCandidates', { page, pageSize });
     console.log('📥 Resultado completo recebido:', result);
     console.log('📊 result.data:', result.data);
     console.log('📊 result.data?.candidates:', result.data?.candidates);
+    console.log('📊 result.pagination:', result.pagination);
 
-    // O Google Apps Script retorna { success: true, data: { candidates: [...] } }
-    const candidatesArray = result.data?.candidates || result.candidates || [];
-    console.log('✅ Array de candidatos extraído:', candidatesArray);
-    console.log('📏 Total de candidatos:', candidatesArray.length);
+    // O Google Apps Script retorna { success: true, candidates: [...], pagination: {...} }
+    const candidatesArray = result.candidates || result.data?.candidates || [];
+    console.log('✅ Array de candidatos extraído:', candidatesArray.length);
+
+    if (result.pagination) {
+      console.log('📊 Paginação:', result.pagination);
+    }
 
     if (candidatesArray.length > 0) {
       console.log('👤 Exemplo do primeiro candidato:', candidatesArray[0]);
@@ -123,7 +129,6 @@ class GoogleSheetsService {
         status: (candidate.Status || candidate.status || 'pendente').toLowerCase(),
         Status: candidate.Status || candidate.status || 'pendente',
 
-        // CORREÇÃO: Mapear assigned_to e Analista corretamente
         assigned_to: candidate.assigned_to || candidate.Analista || null,
         Analista: candidate.Analista || candidate.assigned_to || null,
         assigned_at: candidate.assigned_at || null,
