@@ -210,11 +210,30 @@ export const candidateService = {
       console.log('📊 [CandidateService] UserId:', userId);
       console.log('📊 [CandidateService] Filters:', filters);
 
-      const allData = await sheetsService.getCandidates();
+      const allData = await sheetsService.getCandidates(page, pageSize);
       console.log('📦 [CandidateService] Total de candidatos carregados:', allData.length);
 
       if (allData.length > 0) {
         console.log('👤 [CandidateService] Exemplo de candidato:', allData[0]);
+        console.log('🔍 [CandidateService] Campos do candidato:', Object.keys(allData[0]));
+
+        // Verificar se os campos estão vazios
+        const primeiroCandidate = allData[0];
+        const camposVazios = [];
+        const camposPreenchidos = [];
+
+        ['NOMECOMPLETO', 'CPF', 'AREAATUACAO', 'CARGOADMIN', 'CARGOASSIS', 'VAGAPCD'].forEach(campo => {
+          if (!primeiroCandidate[campo] || primeiroCandidate[campo] === '') {
+            camposVazios.push(campo);
+          } else {
+            camposPreenchidos.push(campo);
+          }
+        });
+
+        if (camposVazios.length > 0) {
+          console.warn('⚠️ [CandidateService] Campos vazios no primeiro candidato:', camposVazios);
+        }
+        console.log('✅ [CandidateService] Campos preenchidos:', camposPreenchidos);
       }
 
       let filteredData = filterData(allData, filters);

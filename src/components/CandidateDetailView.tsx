@@ -9,6 +9,12 @@ interface CandidateDetailViewProps {
 export default function CandidateDetailView({ candidate, onClose }: CandidateDetailViewProps) {
   const [activeTab, setActiveTab] = useState('info');
 
+  // Debug: Verificar dados do candidato
+  console.log('🔍 [CandidateDetailView] Dados recebidos:', candidate);
+  console.log('🔍 [CandidateDetailView] Campos disponíveis:', Object.keys(candidate));
+  console.log('🔍 [CandidateDetailView] NOMECOMPLETO:', candidate.NOMECOMPLETO);
+  console.log('🔍 [CandidateDetailView] CPF:', candidate.CPF);
+
   const isURL = (value: string): boolean => {
     if (!value || typeof value !== 'string') return false;
     try {

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Dados dos Candidatos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+        .error {
+            color: #dc2626;
+            background: #fee2e2;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #059669;
+            background: #d1fae5;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .data-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 4px;
+            border-left: 4px solid #3b82f6;
+        }
+        .data-section h3 {
+            margin-top: 0;
+            color: #1f2937;
+        }
+        .candidate-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .candidate-card h4 {
+            margin: 0 0 10px 0;
+            color: #1f2937;
+        }
+        .field {
+            display: flex;
+            margin: 5px 0;
+            padding: 5px;
+            background: #f9fafb;
+            border-radius: 2px;
+        }
+        .field-label {
+            font-weight: bold;
+            min-width: 200px;
+            color: #374151;
+        }
+        .field-value {
+            color: #6b7280;
+            word-break: break-all;
+        }
+        .field-value.empty {
+            color: #dc2626;
+            font-style: italic;
+        }
+        pre {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Teste - Estrutura dos Dados dos Candidatos</h1>
+
+        <p>Este teste verificará se os dados dos candidatos estão chegando corretamente do Google Apps Script.</p>
+
+        <button onclick="testarDados()">▶️ Testar Conexão e Dados</button>
+
+        <div id="resultado"></div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxyU62K8MHdXsl1AD50TTtxBP27cs3wzSwyClo9N_uEe39PXiYEdu3IwzcicUEeApP8qQ/exec';
+
+        async function testarDados() {
+            const resultadoDiv = document.getElementById('resultado');
+            resultadoDiv.innerHTML = '<div class="loading">⏳ Carregando dados...</div>';
+
+            try {
+                // Construir URL com parâmetros
+                const url = new URL(SCRIPT_URL);
+                url.searchParams.append('action', 'getCandidates');
+                url.searchParams.append('page', '1');
+                url.searchParams.append('pageSize', '5'); // Apenas 5 para teste
+
+                console.log('📞 Chamando:', url.toString());
+
+                const response = await fetch(url.toString(), {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('📦 Resposta completa:', data);
+
+                // Analisar resposta
+                let html = '<div class="success">✅ Conexão bem-sucedida!</div>';
+
+                // Informações gerais
+                html += '<div class="data-section">';
+                html += '<h3>📊 Informações Gerais</h3>';
+                html += `<div class="field"><span class="field-label">Success:</span><span class="field-value">${data.success}</span></div>`;
+
+                if (data.pagination) {
+                    html += `<div class="field"><span class="field-label">Página:</span><span class="field-value">${data.pagination.page}</span></div>`;
+                    html += `<div class="field"><span class="field-label">Page Size:</span><span class="field-value">${data.pagination.pageSize}</span></div>`;
+                    html += `<div class="field"><span class="field-label">Total:</span><span class="field-value">${data.pagination.total}</span></div>`;
+                    html += `<div class="field"><span class="field-label">Total Pages:</span><span class="field-value">${data.pagination.totalPages}</span></div>`;
+                }
+                html += '</div>';
+
+                // Candidatos
+                const candidates = data.candidates || data.data?.candidates || [];
+
+                html += '<div class="data-section">';
+                html += `<h3>👥 Candidatos Retornados: ${candidates.length}</h3>`;
+
+                if (candidates.length === 0) {
+                    html += '<div class="error">❌ Nenhum candidato retornado!</div>';
+                } else {
+                    // Mostrar primeiro candidato em detalhe
+                    const primeiro = candidates[0];
+                    html += '<div class="candidate-card">';
+                    html += '<h4>🔍 Detalhes do Primeiro Candidato:</h4>';
+
+                    // Verificar todos os campos
+                    const camposImportantes = [
+                        'NOMECOMPLETO',
+                        'NOMESOCIAL',
+                        'CPF',
+                        'AREAATUACAO',
+                        'CARGOADMIN',
+                        'CARGOASSIS',
+                        'VAGAPCD',
+                        'LAUDOMEDICO',
+                        'CURRICULOVITAE',
+                        'COPIARG',
+                        'COPIACPF',
+                        'DIPLOMACERTIFICADO',
+                        'DOCUMENTOSCONSELHO',
+                        'Status',
+                        'DataCadastro',
+                        'Analista',
+                        'assigned_to'
+                    ];
+
+                    let camposVazios = 0;
+                    let camposPreenchidos = 0;
+
+                    camposImportantes.forEach(campo => {
+                        const valor = primeiro[campo];
+                        const temValor = valor !== undefined && valor !== null && valor !== '';
+
+                        if (temValor) camposPreenchidos++;
+                        else camposVazios++;
+
+                        const valorExibido = temValor ?
+                            (typeof valor === 'string' && valor.length > 100 ? valor.substring(0, 100) + '...' : valor) :
+                            'VAZIO';
+
+                        html += `<div class="field">`;
+                        html += `<span class="field-label">${campo}:</span>`;
+                        html += `<span class="field-value ${temValor ? '' : 'empty'}">${valorExibido}</span>`;
+                        html += `</div>`;
+                    });
+
+                    html += '<br>';
+                    html += `<div class="field"><span class="field-label">✅ Campos Preenchidos:</span><span class="field-value">${camposPreenchidos}</span></div>`;
+                    html += `<div class="field"><span class="field-label">❌ Campos Vazios:</span><span class="field-value ${camposVazios > 0 ? 'empty' : ''}">${camposVazios}</span></div>`;
+
+                    html += '</div>';
+
+                    // Mostrar todos os campos disponíveis
+                    html += '<div class="candidate-card">';
+                    html += '<h4>📋 Todos os Campos Disponíveis:</h4>';
+                    const todasChaves = Object.keys(primeiro);
+                    html += `<p>Total de campos: <strong>${todasChaves.length}</strong></p>`;
+                    html += '<p style="font-size: 12px; color: #6b7280;">' + todasChaves.join(', ') + '</p>';
+                    html += '</div>';
+                }
+
+                html += '</div>';
+
+                // JSON completo
+                html += '<div class="data-section">';
+                html += '<h3>📄 JSON Completo (primeiro candidato):</h3>';
+                html += '<pre>' + JSON.stringify(candidates[0], null, 2) + '</pre>';
+                html += '</div>';
+
+                resultadoDiv.innerHTML = html;
+
+            } catch (error) {
+                console.error('❌ Erro:', error);
+                resultadoDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Erro ao conectar</h3>
+                        <p><strong>Mensagem:</strong> ${error.message}</p>
+                        <p><strong>Verifique:</strong></p>
+                        <ul>
+                            <li>A URL do Google Apps Script está correta?</li>
+                            <li>O script está implantado como "Aplicativo da Web"?</li>
+                            <li>O acesso está configurado como "Qualquer pessoa"?</li>
+                            <li>Há candidatos na planilha?</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
