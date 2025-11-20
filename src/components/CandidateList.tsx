@@ -32,6 +32,13 @@ export default function CandidateList({
 }: CandidateListProps) {
   const [detailCandidate, setDetailCandidate] = useState<Candidate | null>(null);
 
+  // Debug: Verificar candidatos recebidos
+  console.log('📋 [CandidateList] Total de candidatos recebidos:', candidates.length);
+  if (candidates.length > 0) {
+    console.log('👤 [CandidateList] Primeiro candidato:', candidates[0]);
+    console.log('📊 [CandidateList] Campos do primeiro:', Object.keys(candidates[0]));
+  }
+
   const filteredCandidates = candidates.filter(candidate => {
     // Filtro por área
     const areaMatch = filterArea === 'all' || candidate.AREAATUACAO === filterArea;

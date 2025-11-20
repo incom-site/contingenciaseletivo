@@ -15,6 +15,16 @@ export default function CandidateDetailView({ candidate, onClose }: CandidateDet
   console.log('🔍 [CandidateDetailView] NOMECOMPLETO:', candidate.NOMECOMPLETO);
   console.log('🔍 [CandidateDetailView] CPF:', candidate.CPF);
 
+  // Verificar valores de TODOS os campos importantes
+  const camposImportantes = ['NOMECOMPLETO', 'NOMESOCIAL', 'CPF', 'AREAATUACAO', 'CARGOADMIN', 'CARGOASSIS', 'VAGAPCD'];
+  console.log('📋 [CandidateDetailView] Valores dos campos importantes:');
+  camposImportantes.forEach(campo => {
+    const valor = candidate[campo];
+    const tipo = typeof valor;
+    const temValor = valor !== undefined && valor !== null && String(valor).trim() !== '';
+    console.log(`  ${temValor ? '✅' : '❌'} ${campo}: "${valor}" (${tipo})`);
+  });
+
   const isURL = (value: string): boolean => {
     if (!value || typeof value !== 'string') return false;
     try {
@@ -82,18 +92,41 @@ export default function CandidateDetailView({ candidate, onClose }: CandidateDet
   };
 
   const getFieldValue = (key: string): any => {
-    if (candidate[key] !== undefined && candidate[key] !== null && candidate[key] !== '') {
-      return candidate[key];
+    const value = candidate[key];
+
+    // Log para debug
+    if (key === 'NOMECOMPLETO' || key === 'CPF') {
+      console.log(`🔍 [getFieldValue] ${key}:`, value, typeof value);
     }
-    return null;
+
+    // Verificar se tem valor válido
+    if (value === undefined || value === null) {
+      return null;
+    }
+
+    // Converter para string e remover espaços
+    const strValue = String(value).trim();
+
+    // Se estiver vazio após trim, retornar null
+    if (strValue === '' || strValue === 'undefined' || strValue === 'null') {
+      return null;
+    }
+
+    return value;
   };
 
   const createOrderedFields = (keys: string[]) => {
-    return keys.map(key => ({
+    const fields = keys.map(key => ({
       key,
       label: formatLabel(key),
       value: getFieldValue(key)
-    })).filter(field => field.value !== null);
+    }));
+
+    const fieldsWithValue = fields.filter(field => field.value !== null);
+
+    console.log(`📋 [createOrderedFields] Total campos: ${keys.length}, Com valor: ${fieldsWithValue.length}`);
+
+    return fieldsWithValue;
   };
 
   // Definindo as seções com as NOVAS colunas
